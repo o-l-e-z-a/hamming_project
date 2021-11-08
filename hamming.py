@@ -10,6 +10,7 @@ from errors import NotValidCodeOptions, CheckEncodingError
 
 
 def hamming_config_parser(config_name) -> tuple[int]:
+    """ парсер парамметров кода Хэмминга """
     config_values = config_parser(config_name, 'n', 'k', 'd')
     if len(config_values) == 3 and all(isinstance(value, int) for value in config_values):
         n, k, d = config_values
@@ -114,6 +115,7 @@ class HammingFileHandler(BaseFileHandler):
         super().__init__(communication_channel=Hamming(config_name=config_name), *args, **kwargs)
 
     def file_handle(self, file):
+        """ чтение информации из файла, запуск канала связи, запись результата в файл"""
         decoded = ''
         for text in self.read_binary(file):
             step = self._communication_channel.k
@@ -124,6 +126,7 @@ class HammingFileHandler(BaseFileHandler):
             self.write_binary(file, decoded, 'decode')
 
     def read_binary(self, file, mode='r', encoding='utf-8'):
+        """ чтение из файла в бинарном виде"""
         b = bitstring.ConstBitStream(filename=file)
         k = self._communication_channel.k
         chunk_size = k if not k % 8 else k * 8
@@ -136,8 +139,7 @@ class HammingFileHandler(BaseFileHandler):
             yield reading.bin
 
     def write_binary(self, file, text, mode='w', encoding='utf-8', writed_dir='decode'):
+        """ запись из файла"""
         make_file_dir(file, writed_dir)
         f = open(os.path.join(writed_dir, file), 'wb')
         bitstring.Bits(bin=text).tofile(f)
-
-
