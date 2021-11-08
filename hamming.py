@@ -5,7 +5,7 @@ import bitstring
 
 from base import BaseCoder, BaseDecoder, BaseNoise, BaseCommunicationChannel, BaseFileHandler
 from service import config_parser, get_power_of_two, make_file_dir
-from maxtrix import MatrixG, MatrixH
+from matrix import MatrixG, MatrixH
 from errors import NotValidCodeOptions, CheckEncodingError
 
 
