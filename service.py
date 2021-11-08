@@ -103,6 +103,7 @@ def file_distribution(files: str, archive_dir: str = '.') -> list:
 
 
 def make_file_dir(file, writed_dir):
+    """ создание директорий для декодируемых файлов"""
     dirs = f'{writed_dir}' + '\\' + os.path.dirname(file)
     path = os.path.abspath('.')
     for dir in dirs.split('\\'):
@@ -112,6 +113,7 @@ def make_file_dir(file, writed_dir):
 
 
 def time_track(func):
+    """ таймер работы программы"""
     def surrogate(*args, **kwargs):
         started_at = time.time()
         result = func(*args, **kwargs)

@@ -66,16 +66,19 @@ class BaseCommunicationChannel:
 
 
 class BaseFileHandler:
+    """ Базовый обработчик файлов для канала связи"""
     def __init__(self, files, communication_channel=BaseCommunicationChannel()) -> None:
         self._communication_channel = communication_channel
         self._files_names = file_distribution(files)
 
     def file_handle(self, file):
+        """ чтение информации из файла, запуск канала связи, запись результата в файл"""
         self._communication_channel.text = self.read(file)
         self._communication_channel.run_with_noise()
         self.write(f'decoded_{file}', self._communication_channel.decoded)
 
     def run(self, with_multiprocessing=False):
+        """ запуск кодирования и декодирования КС"""
         if with_multiprocessing:
             pool = Pool()
             pool.map(self.file_handle, self._files_names)
@@ -85,11 +88,13 @@ class BaseFileHandler:
 
     @staticmethod
     def read(file, mode='r', encoding='utf-8'):
+        """ чтение из файла"""
         with open(file, mode, encoding=encoding) as f:
             for line in f:
                 yield line
 
     @staticmethod
     def write(file, text, mode='w', encoding='utf-8'):
+        """ запись из файла"""
         with open(file, mode, encoding=encoding) as f:
             f.write(text)

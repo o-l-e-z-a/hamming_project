@@ -29,12 +29,13 @@ class BinaryHammingMatrix:
         return self._matrix
 
     def __mul__(self, other: list[str]) -> list[int]:
-        """Умножение на вектор"""
+        """Умножение матрицы на вектор"""
         other_indexes = [i for i in range(len(other)) if other[i] == '1']
         return [[column[i] for i in other_indexes].count('1') % 2 for column in list(zip(*self._matrix))]
         # return [int(reduce(lambda x, y: int(x) ^ int(y), [column[i] for i in other_indexes] + [0])) for column in list(zip(*self._matrix))]
 
     def __rmul__(self, other: list[int]) -> list[int]:
+        """Умножение вектора на матрицы"""
         other_indexes = [i for i in range(len(other)) if other[i] == 1]
         return [[row[i] for i in other_indexes].count('1') % 2 for row in self._matrix]
         # return [int(reduce(lambda x, y: int(x) ^ int(y), [row[i]for i in other_indexes]+[0])) for row in self._matrix]
@@ -54,6 +55,7 @@ class BinaryHammingMatrix:
 
 
 class MatrixH(BinaryHammingMatrix):
+    """ Проверочная матрица"""
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._matrix = [[j for j in bin(i)[2:].zfill(self._n - self._k)] for i in range(1, self._n + 1)]
@@ -61,6 +63,7 @@ class MatrixH(BinaryHammingMatrix):
 
 
 class MatrixG(BinaryHammingMatrix):
+    """ Порождающая матрица"""
     def __init__(self, H, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         H_ = self.get_h_(H)
