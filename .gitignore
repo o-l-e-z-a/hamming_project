@@ -1,5 +1,7 @@
 .idea/
-probe.py
+*probe*.py
 serts.jpg
 /*.txt
 *env/
+forarchive
+*.zip
