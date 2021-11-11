@@ -1,5 +1,5 @@
 from functools import reduce
-
+from typing import List, Tuple
 from service import get_power_of_two
 
 
@@ -10,7 +10,7 @@ class BinaryHammingMatrix:
         self._k = k
         self._matrix = [[0 for i in range(n)] for i in range(k)]
 
-    def size(self) -> tuple[int]:
+    def size(self) -> Tuple[int]:
         return self._n, self._k
 
     def __len__(self) -> int:
@@ -28,13 +28,13 @@ class BinaryHammingMatrix:
     def matrix(self):
         return self._matrix
 
-    def __mul__(self, other: list[str]) -> list[int]:
+    def __mul__(self, other: List[str]) -> list:
         """Умножение матрицы на вектор"""
         other_indexes = [i for i in range(len(other)) if other[i] == '1']
         return [[column[i] for i in other_indexes].count('1') % 2 for column in list(zip(*self._matrix))]
         # return [int(reduce(lambda x, y: int(x) ^ int(y), [column[i] for i in other_indexes] + [0])) for column in list(zip(*self._matrix))]
 
-    def __rmul__(self, other: list[int]) -> list[int]:
+    def __rmul__(self, other: list) -> list:
         """Умножение вектора на матрицы"""
         other_indexes = [i for i in range(len(other)) if other[i] == 1]
         return [[row[i] for i in other_indexes].count('1') % 2 for row in self._matrix]
@@ -70,21 +70,21 @@ class MatrixG(BinaryHammingMatrix):
         G_ = self.get_g_(H_)
         self._matrix = self.get_g(G_)
 
-    def get_h_(self, H) -> list[list[str]]:
+    def get_h_(self, H) -> list:
         H_ = list(zip(*H))
         powers_of_two = get_power_of_two(self._n)
         for index_of_power_2 in reversed(powers_of_two):
             H_.append(H_.pop(index_of_power_2))
         return H_
 
-    def get_g_(self, H_) -> list[tuple[str]]:
+    def get_g_(self, H_) -> list:
         G_ = [['1' if i == j else '0' for i in range(self._k)] for j in range(self._k)]
         for i in range(self._k):
             G_[i] += H_[i]
         G_ = list(zip(*G_))
         return G_
 
-    def get_g(self, G_) -> list[tuple[str]]:
+    def get_g(self, G_) -> list:
         powers_of_two = get_power_of_two(self._n)
         for index_of_power_2 in powers_of_two:
             G_.insert(index_of_power_2, G_.pop(-1))

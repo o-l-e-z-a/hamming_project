@@ -9,7 +9,14 @@ from matrix import MatrixG, MatrixH
 from errors import NotValidCodeOptions, CheckEncodingError
 
 
-def hamming_config_parser(config_name) -> tuple[int]:
+def check_options(n, k, d) -> bool:
+    """ Проверка кода на корректность"""
+    if d != 3 or d > n - k + 1 or n - k != len(get_power_of_two(n)):
+        return False
+    return True
+
+
+def hamming_config_parser(config_name) -> tuple:
     """ парсер парамметров кода Хэмминга """
     config_values = config_parser(config_name, 'n', 'k', 'd')
     if len(config_values) == 3 and all(isinstance(value, int) for value in config_values):
@@ -17,6 +24,21 @@ def hamming_config_parser(config_name) -> tuple[int]:
     else:
         n, k, d = 7, 4, 3
     return n, k, d
+
+
+def hamming_cmd_arg_parser(n=255, k=247) -> tuple:
+    """ парсер парамметров кода Хэмминга из командной строки """
+    parameters = 'параметры командной строки'
+    use_str = ', используем n=255, k=247'
+    try:
+        return int(n), int(k)
+    except ValueError:
+        n = k = None
+    if not all([k, n]):
+        print(f'{parameters.capitalize()} не заданы{use_str}')
+    else:
+        print(f'Неверные {parameters}{use_str}')
+    return 255, 247
 
 
 class HammingMixin:
@@ -37,7 +59,7 @@ class HammingCoder(HammingMixin, BaseCoder):
         # print(self.H)
         # print(self.G)
 
-    def encode(self, text) -> list[int]:
+    def encode(self, text) -> list:
         c = self.G * text
         # print('c', c)
         syndrome = c * self.H
@@ -56,7 +78,7 @@ class HammingDecoder(HammingMixin, BaseDecoder):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    def decode(self, encoded) -> list[int]:
+    def decode(self, encoded) -> list:
         # print('encoded with shum', encoded)
         decoded = encoded[:]
         syndrome = encoded * self.H
@@ -74,20 +96,19 @@ class HammingNoise(BaseNoise):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    def make_noise(self, encoded) -> list[int]:
+    def make_noise(self, encoded) -> list:
         result = encoded[:]
         random_index = random.randint(0, len(encoded)-1)
         result[random_index] = 0 if result[random_index] else 1
         return result
-        # return [0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1]
-        # return [0, 1, 0, 1, 1, 0, 1]
 
 
 class Hamming(BaseCommunicationChannel):
-    def __init__(self, config_name='', *args, **kwargs) -> None:
-        self._n, self._k, self._d = hamming_config_parser(config_name)
+    def __init__(self, n='', k='', config_name='', *args, **kwargs) -> None:
+        self._n, self._k, self._d = *hamming_cmd_arg_parser(n, k), 3
         print(self._n, self._k, self._d)
-        self.check_options()
+        if not check_options(self._n, self._k, self._d):
+            raise NotValidCodeOptions
         super().__init__(
             coder=HammingCoder(self._n, self._k, self._d),
             decoder=HammingDecoder(self._n, self._k, self._d),
@@ -95,11 +116,6 @@ class Hamming(BaseCommunicationChannel):
             *args,
             **kwargs
         )
-
-    def check_options(self) -> None:
-        """ Проверка кода на корректность"""
-        if self._d != 3 or self._d > self._n - self._k + 1 or self._n - self._k != len(get_power_of_two(self._n)):
-            raise NotValidCodeOptions
 
     @property
     def n(self):
@@ -111,8 +127,8 @@ class Hamming(BaseCommunicationChannel):
 
 
 class HammingFileHandler(BaseFileHandler):
-    def __init__(self, config_name, *args, **kwargs):
-        super().__init__(communication_channel=Hamming(config_name=config_name), *args, **kwargs)
+    def __init__(self, config_name='', n='', k='', communication_channel=Hamming, *args, **kwargs):
+        super().__init__(communication_channel=communication_channel(n=n, k=k), *args, **kwargs)
 
     def file_handle(self, file):
         """ чтение информации из файла, запуск канала связи, запись результата в файл"""
@@ -141,5 +157,5 @@ class HammingFileHandler(BaseFileHandler):
     def write_binary(self, file, text, mode='w', encoding='utf-8', writed_dir='decode'):
         """ запись из файла"""
         make_file_dir(file, writed_dir)
-        f = open(os.path.join(writed_dir, file), 'wb')
+        f = open(os.path.abspath(os.path.join(writed_dir, file)), 'wb')
         bitstring.Bits(bin=text).tofile(f)

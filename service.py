@@ -61,6 +61,8 @@ def config_parser(name: str, *args, **kwargs) -> list:
         result = []
     except KeyError:
         result = []
+    except IndexError:
+        result = []
     return result
 
 
@@ -88,7 +90,9 @@ def get_all_files_name_from_dir(files: str) -> list:
 def file_distribution(files: str, archive_dir: str = '.') -> list:
     """ Поиск всех файлов """
     files_names = []
+    # print(files, 'files')
     if os.path.isfile(files):
+        # print(files, 'isfile')
         if zipfile.is_zipfile(files):
             unpacked_zip(files, archive_dir)
             # zip_file_path = os.path.abspath(os.path.join(archive_dir, files.split('.')[0]))
@@ -98,7 +102,11 @@ def file_distribution(files: str, archive_dir: str = '.') -> list:
             # files_names.append(os.path.abspath(files))
             files_names.append(files)
     elif os.path.isdir(files):
+        # print(files, 'isdir')
         files_names += get_all_files_name_from_dir(files)
+    else:
+        print('Неверное имя файла')
+        exit()
     return files_names
 
 
@@ -109,7 +117,10 @@ def make_file_dir(file, writed_dir):
     for dir in dirs.split('\\'):
         path += f'\\{dir}'
         if not os.path.exists(f'{path}'):
-            os.mkdir(f'{path}')
+            try:
+                os.mkdir(f'{path}')
+            except FileExistsError:
+                continue
 
 
 def time_track(func):
@@ -119,6 +130,8 @@ def time_track(func):
         result = func(*args, **kwargs)
         ended_at = time.time()
         elapsed = round((ended_at - started_at) / 60, 4)
+        # elapsed = round((ended_at - started_at), 4)
         print(f'Функция работала {elapsed} минуты(ы)')
+        # print(f'Функция работала {elapsed} секунды(ы)')
         return result
     return surrogate
