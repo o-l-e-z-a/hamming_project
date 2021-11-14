@@ -26,6 +26,5 @@ def main():
     hf = HammingFileHandler(files=files, n=n, k=k, communication_channel=Hamming if no_numpy else HammingNumpy)
     hf.run(with_multiprocessing=False if no_multi_proc else True)
 
-
 if __name__ == '__main__':
     main()

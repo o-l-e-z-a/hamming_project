@@ -130,8 +130,11 @@ class HammingFileHandler(BaseFileHandler):
     def __init__(self, config_name='', n='', k='', communication_channel=Hamming, *args, **kwargs):
         super().__init__(communication_channel=communication_channel(n=n, k=k), *args, **kwargs)
 
-    def file_handle(self, file):
+    def file_handle(self, file, writed_dir='decode'):
         """ чтение информации из файла, запуск канала связи, запись результата в файл"""
+        make_file_dir(file, writed_dir)
+        # for text in self.read_binary(file):
+        #     pass
         decoded = ''
         for text in self.read_binary(file):
             step = self._communication_channel.k
@@ -139,7 +142,8 @@ class HammingFileHandler(BaseFileHandler):
                 self._communication_channel.text = text[i:i+step]
                 self._communication_channel.run_with_noise()
                 decoded += ''.join(str(s) for s in self._communication_channel.decoded[:len(text[i:i+step])])
-            self.write_binary(file, decoded, 'decode')
+        # decoded = ''.join(str(i) for i in [1 for i in range(255)])
+        self.write_binary(file, decoded, 'decode')
 
     def read_binary(self, file, mode='r', encoding='utf-8'):
         """ чтение из файла в бинарном виде"""
@@ -156,6 +160,8 @@ class HammingFileHandler(BaseFileHandler):
 
     def write_binary(self, file, text, mode='w', encoding='utf-8', writed_dir='decode'):
         """ запись из файла"""
-        make_file_dir(file, writed_dir)
-        f = open(os.path.abspath(os.path.join(writed_dir, file)), 'wb')
-        bitstring.Bits(bin=text).tofile(f)
+        # f = open(os.path.abspath(os.path.join(writed_dir, file)), 'wb')
+        # bitstring.Bits(bin=text).tofile(f)
+        with open(os.path.abspath(os.path.join(writed_dir, file)), 'wb') as f:
+            bitstring.Bits(bin=text).tofile(f)
+
