@@ -1,5 +1,5 @@
-from functools import reduce
 from typing import List, Tuple
+
 from service import get_power_of_two
 
 

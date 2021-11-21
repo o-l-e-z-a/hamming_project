@@ -55,7 +55,7 @@ class HammingNumpyDecoder(HammingNumpyCoder, BaseDecoder):
 
 
 class HammingNumpy(BaseCommunicationChannel):
-    def __init__(self, n='', k='', config_name='', *args, **kwargs) -> None:
+    def __init__(self, n='', k='', *args, **kwargs) -> None:
         self._n, self._k, self._d = *hamming_cmd_arg_parser(n, k), 3
         print(self._n, self._k, self._d)
         if not check_options(self._n, self._k, self._d):
@@ -93,5 +93,3 @@ class HammingNumpy(BaseCommunicationChannel):
     @property
     def k(self):
         return self._k
-
-

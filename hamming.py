@@ -22,7 +22,7 @@ def hamming_config_parser(config_name) -> tuple:
     if len(config_values) == 3 and all(isinstance(value, int) for value in config_values):
         n, k, d = config_values
     else:
-        n, k, d = 7, 4, 3
+        n, k, d = 255, 247, 3
     return n, k, d
 
 
@@ -56,19 +56,13 @@ class HammingCoder(HammingMixin, BaseCoder):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        # print(self.H)
-        # print(self.G)
 
     def encode(self, text) -> list:
         c = self.G * text
-        # print('c', c)
         syndrome = c * self.H
         decimal_syndrome = int(''.join(str(s) for s in syndrome), 2)
         if decimal_syndrome:
             raise CheckEncodingError
-
-        # print('syndrome', syndrome)
-        # print('decimal_syndrome', decimal_syndrome)
         return c
 
 
@@ -79,16 +73,12 @@ class HammingDecoder(HammingMixin, BaseDecoder):
         super().__init__(*args, **kwargs)
 
     def decode(self, encoded) -> list:
-        # print('encoded with shum', encoded)
         decoded = encoded[:]
         syndrome = encoded * self.H
-        # print('syndrome', syndrome)
         syndrome_index = int(''.join(str(s) for s in syndrome), 2) - 1
         decoded[syndrome_index] = 0 if decoded[syndrome_index] else 1
-        # print('decoded', decoded)
         for index_of_power_2 in reversed(self.power_of_two):
             decoded.pop(index_of_power_2)
-        # print('decoded', decoded)
         return decoded
 
 
@@ -127,25 +117,24 @@ class Hamming(BaseCommunicationChannel):
 
 
 class HammingFileHandler(BaseFileHandler):
-    def __init__(self, config_name='', n='', k='', communication_channel=Hamming, *args, **kwargs):
+    def __init__(self, n='', k='', communication_channel=Hamming, *args, **kwargs):
         super().__init__(communication_channel=communication_channel(n=n, k=k), *args, **kwargs)
 
-    def file_handle(self, file, writed_dir='decode'):
+    def file_handle(self, file, writed_dir='decode', change_dirs=False):
         """ чтение информации из файла, запуск канала связи, запись результата в файл"""
-        make_file_dir(file, writed_dir)
-        # for text in self.read_binary(file):
-        #     pass
-        decoded = ''
+        # print('writed_dir in file_handle', writed_dir, file)
+        make_file_dir(file, writed_dir,  change_dirs=change_dirs)
+        self.write_binary(file=file, text='', writed_dir=writed_dir, change_dirs=change_dirs, mode='wb')
         for text in self.read_binary(file):
+            decoded = ''
             step = self._communication_channel.k
             for i in range(0, len(text), step):
                 self._communication_channel.text = text[i:i+step]
                 self._communication_channel.run_with_noise()
                 decoded += ''.join(str(s) for s in self._communication_channel.decoded[:len(text[i:i+step])])
-        # decoded = ''.join(str(i) for i in [1 for i in range(255)])
-        self.write_binary(file, decoded, 'decode')
+            self.write_binary(file=file, text=decoded, writed_dir=writed_dir, change_dirs=change_dirs, mode='ab')
 
-    def read_binary(self, file, mode='r', encoding='utf-8'):
+    def read_binary(self, file):
         """ чтение из файла в бинарном виде"""
         b = bitstring.ConstBitStream(filename=file)
         k = self._communication_channel.k
@@ -158,10 +147,11 @@ class HammingFileHandler(BaseFileHandler):
                 reading = b.read(chunk_size)
             yield reading.bin
 
-    def write_binary(self, file, text, mode='w', encoding='utf-8', writed_dir='decode'):
+    def write_binary(self, file, text, mode='ab', writed_dir='decode', change_dirs=False):
         """ запись из файла"""
-        # f = open(os.path.abspath(os.path.join(writed_dir, file)), 'wb')
-        # bitstring.Bits(bin=text).tofile(f)
-        with open(os.path.abspath(os.path.join(writed_dir, file)), 'wb') as f:
+        if change_dirs:
+            file_name = file.replace('/encode/', '/decode/')
+        else:
+            file_name = os.path.abspath(os.path.join(writed_dir, file))
+        with open(file_name, mode) as f:
             bitstring.Bits(bin=text).tofile(f)
-

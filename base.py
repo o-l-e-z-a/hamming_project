@@ -1,10 +1,11 @@
-from service import file_distribution
 from multiprocessing import Pool
+from functools import partial
+
+from service import file_distribution
 
 
 class BaseCoder:
     """Кодер канала связи"""
-
     def encode(self, text):
         """ кодирование """
 
@@ -71,17 +72,18 @@ class BaseFileHandler:
         self._communication_channel = communication_channel
         self._files_names = file_distribution(files)
 
-    def file_handle(self, file):
+    def file_handle(self, file, writed_dir='decode'):
         """ чтение информации из файла, запуск канала связи, запись результата в файл"""
         self._communication_channel.text = self.read(file)
         self._communication_channel.run_with_noise()
         self.write(f'decoded_{file}', self._communication_channel.decoded)
 
-    def run(self, with_multiprocessing=False):
+    def run(self, with_multiprocessing=False, writed_dir='decode', change_dirs=False):
         """ запуск кодирования и декодирования КС"""
         if with_multiprocessing:
             pool = Pool()
-            pool.map(self.file_handle, self._files_names)
+            func = partial(self.file_handle, writed_dir=writed_dir, change_dirs=change_dirs)
+            pool.map(func, self._files_names)
         else:
             for file in self._files_names:
                 self.file_handle(file)

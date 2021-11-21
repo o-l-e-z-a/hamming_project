@@ -4,6 +4,7 @@ from service import get_power_of_two
 
 
 def get_numpy_h(n, k):
+    """ Формирование проверочной матрицы H"""
     matrix = [[int(j) for j in bin(i)[2:].zfill(n - k)] for i in range(1, n + 1)]
     matrix = list(zip(*matrix))
     H_np = np.array(matrix, dtype=np.int8)
@@ -11,6 +12,7 @@ def get_numpy_h(n, k):
 
 
 def get_numpy_g(H_np, n, k):
+    """ Формирование порождающей матрицы G"""
     _H_np = np.copy(H_np).swapaxes(0, 1)
     power_of_two = get_power_of_two(n)
 

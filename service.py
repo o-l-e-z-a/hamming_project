@@ -1,10 +1,9 @@
 import time
-
-import yaml
-import json
-import zipfile
 import math
 import os.path
+import json
+import yaml
+import zipfile
 
 
 def get_parser_values(data, *args, **kwargs) -> list:
@@ -77,12 +76,11 @@ def unpacked_zip(files: str, archive_dir) -> None:
         zip_file.extractall(archive_dir)
 
 
-def get_all_files_name_from_dir(files: str) -> list:
+def get_all_files_name_from_dir(files: str, ) -> list:
     """ Поиск всех файлов в дириктории"""
     files_names = []
     for p, d, f in os.walk(files):
         for file in f:
-            # files_names.append(os.path.abspath(os.path.join(p, file)))
             files_names.append(os.path.join(p, file))
     return files_names
 
@@ -90,19 +88,15 @@ def get_all_files_name_from_dir(files: str) -> list:
 def file_distribution(files: str, archive_dir: str = '.') -> list:
     """ Поиск всех файлов """
     files_names = []
-    # print(files, 'files')
     if os.path.isfile(files):
-        # print(files, 'isfile')
         if zipfile.is_zipfile(files):
-            unpacked_zip(files, archive_dir)
-            # zip_file_path = os.path.abspath(os.path.join(archive_dir, files.split('.')[0]))
+            unpacked_zip(files, os.path.dirname(files))
             zip_file_path = os.path.join(archive_dir, files.split('.')[0])
             files_names += get_all_files_name_from_dir(zip_file_path)
+            os.remove(files)
         else:
-            # files_names.append(os.path.abspath(files))
             files_names.append(files)
     elif os.path.isdir(files):
-        # print(files, 'isdir')
         files_names += get_all_files_name_from_dir(files)
     else:
         print('Неверное имя файла')
@@ -110,12 +104,20 @@ def file_distribution(files: str, archive_dir: str = '.') -> list:
     return files_names
 
 
-def make_file_dir(file, writed_dir):
+def make_file_dir(file, writed_dir, change_dirs=True):
     """ создание директорий для декодируемых файлов"""
-    dirs = f'{writed_dir}' + '\\' + os.path.dirname(file)
-    path = os.path.abspath('.')
+    if change_dirs:
+        dirs = os.path.dirname(file)
+        dirs = dirs.replace('/encode', '/decode')
+        try:
+            os.mkdir(dirs)
+        except FileExistsError:
+            pass
+    else:
+        dirs = f'{writed_dir}' + '\\' + os.path.dirname(file)
+    path = ''
     for dir in dirs.split('\\'):
-        path += f'\\{dir}'
+        path = os.path.join(path, dir)
         if not os.path.exists(f'{path}'):
             try:
                 os.mkdir(f'{path}')
@@ -130,8 +132,6 @@ def time_track(func):
         result = func(*args, **kwargs)
         ended_at = time.time()
         elapsed = round((ended_at - started_at) / 60, 4)
-        # elapsed = round((ended_at - started_at), 4)
         print(f'Функция работала {elapsed} минуты(ы)')
-        # print(f'Функция работала {elapsed} секунды(ы)')
         return result
     return surrogate
