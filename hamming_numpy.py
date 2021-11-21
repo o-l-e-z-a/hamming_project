@@ -23,8 +23,6 @@ class HammingNumpyCoder(HammingNumpyMixin, BaseCoder):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        # print(self.H)
-        # print(self.G)
 
     def encode(self, text):
         text = np.array([int(i) for i in text], dtype=np.int8)

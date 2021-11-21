@@ -32,13 +32,11 @@ class BinaryHammingMatrix:
         """Умножение матрицы на вектор"""
         other_indexes = [i for i in range(len(other)) if other[i] == '1']
         return [[column[i] for i in other_indexes].count('1') % 2 for column in list(zip(*self._matrix))]
-        # return [int(reduce(lambda x, y: int(x) ^ int(y), [column[i] for i in other_indexes] + [0])) for column in list(zip(*self._matrix))]
 
     def __rmul__(self, other: list) -> list:
         """Умножение вектора на матрицы"""
         other_indexes = [i for i in range(len(other)) if other[i] == 1]
         return [[row[i] for i in other_indexes].count('1') % 2 for row in self._matrix]
-        # return [int(reduce(lambda x, y: int(x) ^ int(y), [row[i]for i in other_indexes]+[0])) for row in self._matrix]
 
     def __getitem__(self, index) -> list:
         return self._matrix[index]

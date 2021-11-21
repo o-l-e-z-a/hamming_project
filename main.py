@@ -17,9 +17,6 @@ Usage:
 
 """
 
-# --numpy = < numpy_flag > [default: False]
-# --multi_proc = < multi_flag > [default: False]
-
 
 @time_track
 def main():
