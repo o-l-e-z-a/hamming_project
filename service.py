@@ -109,14 +109,15 @@ def make_file_dir(file, writed_dir, change_dirs=True):
     if change_dirs:
         dirs = os.path.dirname(file)
         dirs = dirs.replace('/encode', '/decode')
+        path = ''
         try:
             os.mkdir(dirs)
         except FileExistsError:
             pass
     else:
-        dirs = f'{writed_dir}' + '\\' + os.path.dirname(file)
-    path = ''
-    for dir in dirs.split('\\'):
+        dirs = os.path.join(writed_dir, os.path.dirname(file))
+        path = '/'
+    for dir in dirs.split('/'):
         path = os.path.join(path, dir)
         if not os.path.exists(f'{path}'):
             try:
