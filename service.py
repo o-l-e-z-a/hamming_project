@@ -104,7 +104,7 @@ def file_distribution(files: str, archive_dir: str = '.') -> list:
     return files_names
 
 
-def make_file_dir(file, writed_dir, change_dirs=True):
+def make_file_dir(file, writed_dir, change_dirs=False):
     """ создание директорий для декодируемых файлов"""
     if change_dirs:
         dirs = os.path.dirname(file)
@@ -115,13 +115,16 @@ def make_file_dir(file, writed_dir, change_dirs=True):
         except FileExistsError:
             pass
     else:
-        dirs = os.path.join(writed_dir, os.path.dirname(file))
-        path = '/'
+        dirs = os.path.join(writed_dir,  os.path.dirname(file))
+        if not writed_dir == 'decode':
+            path = '/'
+        else:
+            path = ''
     for dir in dirs.split('/'):
         path = os.path.join(path, dir)
-        if not os.path.exists(f'{path}'):
+        if not os.path.exists(path):
             try:
-                os.mkdir(f'{path}')
+                os.mkdir(path)
             except FileExistsError:
                 continue
 
