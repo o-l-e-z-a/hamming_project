@@ -4,26 +4,16 @@ import os.path
 import bitstring
 
 from base import BaseCoder, BaseDecoder, BaseNoise, BaseCommunicationChannel, BaseFileHandler
-from service import config_parser, get_power_of_two, make_file_dir
+from service import get_power_of_two, make_file_dir
 from matrix import MatrixG, MatrixH
 from errors import NotValidCodeOptions, CheckEncodingError
 
 
 def check_options(n, k, d) -> bool:
     """ Проверка кода на корректность"""
-    if d != 3 or d > n - k + 1 or n - k != len(get_power_of_two(n)):
+    if d != 3 or d > n - k + 1 or pow(2, k)*(n+1) != pow(2, n):
         return False
     return True
-
-
-def hamming_config_parser(config_name) -> tuple:
-    """ парсер парамметров кода Хэмминга """
-    config_values = config_parser(config_name, 'n', 'k', 'd')
-    if len(config_values) == 3 and all(isinstance(value, int) for value in config_values):
-        n, k, d = config_values
-    else:
-        n, k, d = 255, 247, 3
-    return n, k, d
 
 
 def hamming_cmd_arg_parser(n=255, k=247) -> tuple:
