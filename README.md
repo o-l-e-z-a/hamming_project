@@ -9,7 +9,7 @@
 
 ## Запуск проекта:
 - git clone https://github.com/o-l-e-z-a/hamming_project.git && cd hamming_project && pip install -r requirements.txt
-- python main.py run -h -> to get help info
+- python main.py run -h -> для получения документации по запуска консольного приложения
 
 ## Краткое описание алгоритма:
 - построение проверочной матрица размерами (n, n-k), где n - общее число символов, k - количество информационных бит
