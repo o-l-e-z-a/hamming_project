@@ -8,4 +8,5 @@
 - Легко расширяемая структура <br/>
 
 ## Запуск проекта:
+- git clone 
 - python main.py run -h -> to get help info
