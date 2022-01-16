@@ -19,7 +19,7 @@ class HammingNumpyMixin:
 
 
 class HammingNumpyCoder(HammingNumpyMixin, BaseCoder):
-    """ Кодер ал-ма Хэмминга"""
+    """ Кодер ал-ма Хэмминга с интерфейсом numpy"""
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -37,6 +37,7 @@ class HammingNumpyCoder(HammingNumpyMixin, BaseCoder):
 
 
 class HammingNumpyDecoder(HammingNumpyCoder, BaseDecoder):
+    """ Декодер ал-ма Хэмминга с интерфейсом numpy"""
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -53,6 +54,8 @@ class HammingNumpyDecoder(HammingNumpyCoder, BaseDecoder):
 
 
 class HammingNumpy(BaseCommunicationChannel):
+    """ Канал связи, на основе ал-ма Хэмминга с интерфейсом numpy"""
+
     def __init__(self, n='', k='', *args, **kwargs) -> None:
         self._n, self._k, self._d = *hamming_cmd_arg_parser(n, k), 3
         print(self._n, self._k, self._d)

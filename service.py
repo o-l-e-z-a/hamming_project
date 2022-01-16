@@ -44,7 +44,7 @@ def file_distribution(files: str, archive_dir: str = '.') -> list:
 
 
 def make_file_dir(file, writed_dir, change_dirs=False):
-    """ создание директорий для декодируемых файлов"""
+    """ Создание директорий для декодируемых файлов"""
     if change_dirs:
         dirs = os.path.dirname(file)
         dirs = dirs.replace('/encode', '/decode')
@@ -69,7 +69,7 @@ def make_file_dir(file, writed_dir, change_dirs=False):
 
 
 def time_track(func):
-    """ таймер работы программы"""
+    """ Таймер работы программы"""
     def surrogate(*args, **kwargs):
         started_at = time.time()
         result = func(*args, **kwargs)

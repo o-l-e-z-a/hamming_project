@@ -17,7 +17,7 @@ def check_options(n, k, d) -> bool:
 
 
 def hamming_cmd_arg_parser(n=255, k=247) -> tuple:
-    """ парсер парамметров кода Хэмминга из командной строки """
+    """ Парсер парамметров кода Хэмминга из командной строки """
     parameters = 'параметры командной строки'
     use_str = ', используем n=255, k=247'
     try:
@@ -111,8 +111,7 @@ class HammingFileHandler(BaseFileHandler):
         super().__init__(communication_channel=communication_channel(n=n, k=k), *args, **kwargs)
 
     def file_handle(self, file, writed_dir='decode', change_dirs=False):
-        """ чтение информации из файла, запуск канала связи, запись результата в файл"""
-        # print('writed_dir in file_handle', writed_dir, file)
+        """ Чтение информации из файла, запуск канала связи, запись результата в файл"""
         make_file_dir(file, writed_dir,  change_dirs=change_dirs)
         self.write_binary(file=file, text='', writed_dir=writed_dir, change_dirs=change_dirs, mode='wb')
         for text in self.read_binary(file):
@@ -125,7 +124,7 @@ class HammingFileHandler(BaseFileHandler):
             self.write_binary(file=file, text=decoded, writed_dir=writed_dir, change_dirs=change_dirs, mode='ab')
 
     def read_binary(self, file):
-        """ чтение из файла в бинарном виде"""
+        """ Чтение из файла в бинарном виде"""
         b = bitstring.ConstBitStream(filename=file)
         k = self._communication_channel.k
         chunk_size = k if not k % 8 else k * 8
@@ -138,7 +137,7 @@ class HammingFileHandler(BaseFileHandler):
             yield reading.bin
 
     def write_binary(self, file, text, mode='ab', writed_dir='decode', change_dirs=False):
-        """ запись из файла"""
+        """ Запись из файла"""
         if change_dirs:
             file_name = file.replace('/encode/', '/decode/')
         else:

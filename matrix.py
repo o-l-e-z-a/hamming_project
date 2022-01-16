@@ -69,6 +69,7 @@ class MatrixG(BinaryHammingMatrix):
         self._matrix = self.get_g(G_)
 
     def get_h_(self, H) -> list:
+        """ Получение промежуточной матрицы H` из проверочной матрицы H"""
         H_ = list(zip(*H))
         powers_of_two = get_power_of_two(self._n)
         for index_of_power_2 in reversed(powers_of_two):
@@ -76,6 +77,7 @@ class MatrixG(BinaryHammingMatrix):
         return H_
 
     def get_g_(self, H_) -> list:
+        """ Получение промежуточной матрицы G` из промежуточной матрицы H`"""
         G_ = [['1' if i == j else '0' for i in range(self._k)] for j in range(self._k)]
         for i in range(self._k):
             G_[i] += H_[i]
@@ -83,6 +85,7 @@ class MatrixG(BinaryHammingMatrix):
         return G_
 
     def get_g(self, G_) -> list:
+        """ Получение порождающей матрицы G из промежуточной матрицы G`"""
         powers_of_two = get_power_of_two(self._n)
         for index_of_power_2 in powers_of_two:
             G_.insert(index_of_power_2, G_.pop(-1))
