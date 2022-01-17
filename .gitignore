@@ -5,3 +5,5 @@ serts.jpg
 *env/
 forarchive
 *.zip
+__pychache__/
+*pyc
